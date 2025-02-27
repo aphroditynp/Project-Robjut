@@ -10,8 +10,6 @@ const float alpha = 0.96;
 float dt = 0.01;
 unsigned long previousTime, currentTime;
 
-float tesuntukcommit;
-
 Kalman kalmanX;
 Kalman kalmanY;
 
