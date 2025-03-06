@@ -13,6 +13,7 @@
  PID PIDRoll(&inputRoll, &URoll, &Setpoint, Kproll, Kiroll, Kdroll, DIRECT);
  PID PIDPitch(&inputPitch, &UPitch, &Setpoint, Kppitch, Kipitch, Kdpitch, DIRECT);
  PID PIDYaw(&inputYaw, &UYaw, &Setpoint, Kpyaw, Kiyaw, Kdyaw, DIRECT);
+ 
  //Specify the links and initial tuning parameters
  void kendali(){
     inputRoll = Roll;

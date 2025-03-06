@@ -12,6 +12,9 @@ void setup() {
   Wire.write(0);
   Wire.endTransmission();
   previousTime = millis(); 
+  PIDRoll.SetMode(AUTOMATIC);
+  PIDPitch.SetMode(AUTOMATIC);
+  PIDYaw.SetMode(AUTOMATIC);
 }
 
 void loop() {
