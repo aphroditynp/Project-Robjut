@@ -1,9 +1,8 @@
 #include <Wire.h>
 #include <Arduino.h>
-#include <akuisisi.h>
 #include <math.h>
 #include <Kalman.h>
-
+#include <kendali.h>
 
 void setup() {
   Wire.begin();
@@ -17,9 +16,15 @@ void setup() {
 
 void loop() {
   ambil_data();
+  kendali();
 
   Serial.print("Roll: "); Serial.print(Roll);
-  Serial.print(" | Pitch: "); Serial.println(Pitch);
+  Serial.print(" | Pitch: "); Serial.print(Pitch);
+  Serial.print(" | Yaw: "); Serial.print(Yaw);
+
+  Serial.print(" | U1: "); Serial.print(U1);
+  Serial.print(" | U2: "); Serial.print(U2);
+  Serial.print(" | U3: "); Serial.println(U3);
 
   delay(1);
 }
