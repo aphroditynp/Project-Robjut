@@ -22,9 +22,9 @@ void loop() {
   Serial.print(" | Pitch: "); Serial.print(Pitch);
   Serial.print(" | Yaw: "); Serial.print(Yaw);
 
-  Serial.print(" | U1: "); Serial.print(U1);
-  Serial.print(" | U2: "); Serial.print(U2);
-  Serial.print(" | U3: "); Serial.println(U3);
+  Serial.print(" | U1: "); Serial.print(URoll);
+  Serial.print(" | U2: "); Serial.print(UPitch);
+  Serial.print(" | U3: "); Serial.println(UYaw);
 
   delay(1);
 }

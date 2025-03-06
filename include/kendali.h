@@ -1,38 +1,25 @@
 #include <akuisisi.h>
+#include <PID.h>
 
-float setpoint = 0.0;
-float rawroll, rawpitch, rawyaw;
-float U1, U2, U3;
-float errorRoll, errorPitch, errorYaw;
-float KpRoll = 10.0, KpPitch = 10.0, KpYaw = 10.0;
-float KiRoll = 0.0, KiPitch = 0.0, KiYaw = 0.0;
-float KdRoll = 3.0, KdPitch = 3.0, KdYaw = 3.0;
-float integralRoll = 0.0, integralPitch = 0.0, integralYaw = 0.0;
-float previousErrorRoll = 0.0, previousErrorPitch = 0.0, previousErrorYaw = 0.0;// Assuming a time step of 0.01 seconds
-
-void kendali (){
-    rawroll = Roll;
-    rawpitch = Pitch;
-    rawyaw = Yaw;
+ #define PIN_INPUT 0
+ #define PIN_OUTPUT 3
+ 
+ //Define Variables we'll be connecting to
+ double Setpoint = 0, inputRoll, URoll, inputPitch, UPitch, inputYaw, UYaw;
+ double Kproll = 2, Kiroll = 5, Kdroll = 1;
+ double Kppitch = 2, Kipitch = 5, Kdpitch = 1;
+ double Kpyaw = 2, Kiyaw = 5, Kdyaw = 1;
+ 
+ PID PIDRoll(&inputRoll, &URoll, &Setpoint, Kproll, Kiroll, Kdroll, DIRECT);
+ PID PIDPitch(&inputPitch, &UPitch, &Setpoint, Kppitch, Kipitch, Kdpitch, DIRECT);
+ PID PIDYaw(&inputYaw, &UYaw, &Setpoint, Kpyaw, Kiyaw, Kdyaw, DIRECT);
+ //Specify the links and initial tuning parameters
+ void kendali(){
+    inputRoll = Roll;
+    inputPitch = Pitch;
+    inputYaw = Yaw;
     
-    errorRoll = setpoint - rawroll;
-    errorPitch = setpoint - rawpitch;
-    errorYaw = setpoint - rawyaw;
-    
-    integralRoll += errorRoll * dt;
-    integralPitch += errorPitch * dt;
-    integralYaw += errorYaw * dt;
-    
-    float derivativeRoll = (errorRoll - previousErrorRoll) / dt;
-    float derivativePitch = (errorPitch - previousErrorPitch) / dt;
-    float derivativeYaw = (errorYaw - previousErrorYaw) / dt;
-    
-    U1 = KpRoll * errorRoll + KiRoll * integralRoll + KdRoll * derivativeRoll;
-    U2 = KpPitch * errorPitch + KiPitch * integralPitch + KdPitch * derivativePitch;
-    U3 = KpYaw * errorYaw + KiYaw * integralYaw + KdYaw * derivativeYaw;
-    
-    previousErrorRoll = errorRoll;
-    previousErrorPitch = errorPitch;
-    previousErrorYaw = errorYaw;
-    
-}
+    PIDRoll.Compute();
+    PIDPitch.Compute();
+    PIDYaw.Compute();
+ }
