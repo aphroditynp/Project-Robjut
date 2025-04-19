@@ -1,8 +1,10 @@
 #include <Wire.h>
+#include <akuisisi.h>
 #include <Arduino.h>
 #include <math.h>
 #include <Kalman.h>
-#include <kendali.h>
+#include <Radio.h>
+
 
 void setup() {
   Wire.begin();
@@ -12,19 +14,21 @@ void setup() {
   Wire.write(0);
   Wire.endTransmission();
   previousTime = millis(); 
+  remote_setup();
 }
 
 void loop() {
-  ambil_data();
-  kendali();
+  remote_loop();
+  ambil_data_imu();
+  // kendali();
 
-  Serial.print("Roll: "); Serial.print(Roll);
-  Serial.print(" | Pitch: "); Serial.print(Pitch);
-  Serial.print(" | Yaw: "); Serial.print(Yaw);
+  Serial.print("Roll: "); Serial.print(roll);
+  Serial.print(" | Pitch: "); Serial.print(pitch);
+  Serial.print(" | Yaw: "); Serial.print(yaw);
 
-  Serial.print(" | U1: "); Serial.print(U1);
-  Serial.print(" | U2: "); Serial.print(U2);
-  Serial.print(" | U3: "); Serial.println(U3);
+  // Serial.print(" | U1: "); Serial.print(U1);
+  // Serial.print(" | U2: "); Serial.print(U2);
+  // Serial.print(" | U3: "); Serial.println(U3);
 
   delay(1);
 }
