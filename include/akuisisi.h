@@ -50,13 +50,16 @@ void ambil_data() {
     accRoll  = atan2(Ay, sqrt(Ax * Ax + Az * Az)) * 180.0 / PI;
     accPitch = atan2(Ax, sqrt(Ay * Ay + Az * Az)) * 180.0 / PI;
 
-    // Gunakan Kalman Filter
-    Roll = kalmanX.getAngle(accRoll, gx, dt);
-    Pitch = kalmanY.getAngle(accPitch, gy, dt);
+    Pitch = 0.98 * (Pitch + (gy) * dt) + (0.02) * accPitch;
+    Roll = 0.98 * (Roll + (gx) * dt) + (0.02) * accRoll;
 
-    // Hitung Yaw dari giroskop (integrasi langsung)
-    Yaw += gz * dt;
+    // // Gunakan Kalman Filter
+    // Roll = kalmanX.getAngle(accRoll, gx, dt);
+    // Pitch = kalmanY.getAngle(accPitch, gy, dt);
 
-    // Gunakan Kalman Filter untuk Yaw (opsional)
-    Yaw = kalmanZ.getAngle(Yaw, gz, dt);
+    // // Hitung Yaw dari giroskop (integrasi langsung)
+    // Yaw += gz * dt;
+
+    // // Gunakan Kalman Filter untuk Yaw (opsional)
+    // Yaw = kalmanZ.getAngle(Yaw, gz, dt);
 }
