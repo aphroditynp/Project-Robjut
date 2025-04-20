@@ -68,14 +68,4 @@ void ambil_data_imu() {
     // Yaw = kalmanZ.getAngle(Yaw, gz, dt);
 }
 
-void ambil_data_ultrasonik() {
-    // Fungsi untuk membaca data dari sensor ultrasonik
-    // Misalnya, menggunakan ping dan echo pin
-    // digitalWrite(triggerPin, LOW);
-    // delayMicroseconds(2);
-    // digitalWrite(triggerPin, HIGH);
-    // delayMicroseconds(10);
-    // digitalWrite(triggerPin, LOW);
-    // duration = pulseIn(echoPin, HIGH);
-    // distance = (duration * 0.034) / 2;
-}
+

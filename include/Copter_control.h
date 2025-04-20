@@ -6,8 +6,10 @@
     #include "Control_Modes.h"
     #include "Copter_config.h"
     #include "Radio.h"
+    #include "Ultrasonik.h"
     // float m1_pwm, m2_pwm, m3_pwm, m4_pwm;
-    // F450 frame
+    
+    /// matrix invers A F450
     const double A_invers[4][4] = {{292600, 2600600, 0, -6283300},
                                 {292600, 0, -2600600, 6283300},
                                 {292600, -2600600, 0, -6283300},
@@ -18,6 +20,7 @@
     //                                {-91600, -172800, -172800, 1471600},
     //                                {-91600, -172800, 172800, -1471600}};
 
+    // variabel
     float u1, u2, u3, u4;
     float w1, w2, w3, w4;
     float roll_int, pitch_int;
@@ -30,18 +33,24 @@
     float alt_ref, heading_now, last_alt, last_heading, alt_now;
     float alt_target, z_velocity;
     float roll_cmd, pitch_cmd, yaw_cmd;
+
+    // maximum and minimum values for roll, pitch, yaw, and PID limits
     float min_roll = -35.0;  // 30
     float max_roll = 35.0;
     float min_pitch = -35.0;  // 25
     float max_pitch = 35.0;
     float min_yaw = -20.0;
     float max_yaw = 20.0;
+
+    // PID limits
     int PID_max_roll = 400;
     int PID_max_pitch = 400;
     int PID_max_yaw = 400;
     int PID_min_roll = -400;
     int PID_min_pitch = -400;
     int PID_min_yaw = -400;
+    
+    // TRIM VALUES
     // float trim_roll = 3.0f;  // 4.8f;//= 2.71;//3.78; //-40 //(+) bales kanan, (-) bales kiri 5 -2
     // float trim_pitch = 3.5f;  // 10.0f;// 2.40;//2.62; //-30 //25 //22.4 -15.5 -10 -5 // (+) bales maju, (-)bales mundur // 3.5
     // float trim_yaw = -0.015f;   // 0.006 //(+) bales kanan, (-) bales kiri -0.349 -0.360
@@ -110,23 +119,24 @@
         calc_time = micros();
         delta_calc_time = (calc_time - last_calc_time) / 1000000.0;
         heading_now = yaw;
-        alt_ref = altitude;
-        alt_now = altitude;
+        // distance = read_altitude();
+        alt_ref = read_altitude();
+        alt_now = read_altitude();
         if (alt_hold && mode_fbwa) {
             if (ch_throttle > 1600) {
-                alt_setpoint = altitude;
+                alt_setpoint = read_altitude();
                 alt_setpoint += (ch_throttle - 1600) / 20000;
             } else if (ch_throttle < 1400) {
-                alt_setpoint = altitude;
+                alt_setpoint = read_altitude();
                 alt_setpoint -= (ch_throttle - 1400) / 20000;
             } else {
-                alt_setpoint = altitude;
+                alt_setpoint = read_altitude();
             }
-            alt_target = altitude - alt_setpoint;
+            alt_target = read_altitude(); - alt_setpoint;
             z_velocity = (alt_now - last_alt) / delta_calc_time;
         } else if (mode_fbwa && !alt_hold) {
-            alt_target = altitude - alt_ref;
-            z_velocity = (altitude - last_alt) / delta_calc_time;
+            alt_target = read_altitude(); - alt_ref;
+            z_velocity = (read_altitude(); - last_alt) / delta_calc_time;
         }
         // yaw_setpoint = heading_now - last_heading;
         yaw_setpoint = delta_yaw;
@@ -134,8 +144,8 @@
         if (yaw_setpoint < -180) yaw_setpoint += 360;
         copter_getIntegral(ch_thr, roll, pitch, yaw);
 
-        roll_cmd = 1.3*(map(ch_r - 1500, min_roll_corr, max_roll_corr, min_roll, max_roll));
-        pitch_cmd = 1.1*(map(ch_p - 1500, min_pitch_corr, max_pitch_corr, min_pitch, max_pitch));
+        roll_cmd = (map(ch_r - 1500, min_roll_corr, max_roll_corr, min_roll, max_roll));
+        pitch_cmd = (map(ch_p - 1500, min_pitch_corr, max_pitch_corr, min_pitch, max_pitch));
         yaw_cmd = (map(ch_y - 1500, min_yaw_corr, max_yaw_corr, min_yaw, max_yaw));  // 0.08
         u1 = 0.0f;                                                                          //(-gain.k_alt*(alt_target/1.000f) + (-gain.k_z_velocity*(z_velocity)/100.0f))/1000000.0f;
         u2 = ((-gain.k_roll * (roll + roll_int - (roll_cmd + trim_roll)) / 10000000.0f) + (-gain.k_roll_rate * (gy) / 10000000.0f));
