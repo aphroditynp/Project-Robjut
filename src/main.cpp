@@ -15,6 +15,7 @@ void setup() {
   Wire.endTransmission();
   previousTime = millis(); 
   remote_setup();
+  ultrasonic_setup();
 }
 
 void printUSB() {
