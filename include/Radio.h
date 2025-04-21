@@ -36,7 +36,7 @@ float outputScaler(uint16_t ch) {
 
 void remote_setup() {
   sbusSerial.begin(100000, SERIAL_8E2, SBUS_RX_PIN, SBUS_TX_PIN);
-  sbus_rx.Begin(sbusSerial);  // Inject HardwareSerial via Begin()
+  // sbus_rx.Begin(sbusSerial);  // Inject HardwareSerial via Begin()
 
   if (sbus_rx.Read()) {
     data = sbus_rx.data();

@@ -3,7 +3,7 @@
     #include <Arduino.h>
 
     #include "akuisisi.h"
-    #include "Control_Modes.h"
+    // #include "Control_Modes.h"
     #include "Copter_config.h"
     #include "Radio.h"
     #include "Ultrasonik.h"
@@ -136,7 +136,7 @@
             z_velocity = (alt_now - last_alt) / delta_calc_time;
         } else if (mode_fbwa && !alt_hold) {
             alt_target = read_altitude(); - alt_ref;
-            z_velocity = (read_altitude(); - last_alt) / delta_calc_time;
+            z_velocity = (read_altitude() - last_alt) / delta_calc_time;
         }
         // yaw_setpoint = heading_now - last_heading;
         yaw_setpoint = delta_yaw;

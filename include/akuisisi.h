@@ -1,20 +1,23 @@
+#ifndef AKUISISI_H
+#define AKUISISI_H
+#include <Arduino.h>
 #include <Wire.h>
 #include <math.h>
 #include <Kalman.h>
 
-float PI = 3.14159265358979323846; 
-float pitch = 0.0, roll = 0.0, yaw = 0.0, delta_yaw = 0.0, prev_yaw = 0.0; 
-float accPitch = 0.0, accRoll = 0.0; 
-float AcX = 0.0, AcY = 0.0, AcZ = 0.0;
+#endif // AKUISISI_H
+extern float pitch, roll, yaw, delta_yaw, prev_yaw;
+extern float accPitch, accRoll; 
+// float AcX = 0.0, AcY = 0.0, AcZ = 0.0;
 const int MPU = 0x68;  // Alamat I2C MPU6050
-float dt = 0.01;
-unsigned long previousTime, currentTime;
+extern float dt;
+extern unsigned long previousTime, currentTime;
 
-Kalman kalmanX;
-Kalman kalmanY;
-Kalman kalmanZ;
+// Kalman kalmanX;
+// Kalman kalmanY;
+// Kalman kalmanZ;
 
-void ambil_data_imu() {
+void ambil_data() {
     currentTime = millis();
     dt = (currentTime - previousTime) / 1000.0;
     previousTime = currentTime;

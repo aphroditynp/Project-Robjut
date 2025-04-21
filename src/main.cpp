@@ -1,9 +1,11 @@
 #include <Wire.h>
-#include <akuisisi.h>
 #include <Arduino.h>
 #include <math.h>
 #include <Kalman.h>
 #include <Radio.h>
+#include <Ultrasonik.h>
+#include <Actuator.h>
+#include <akuisisi.h>
 
 
 void setup() {
@@ -32,7 +34,7 @@ void printUSB() {
 
 void loop() {
   remote_loop();
-  ambil_data_imu();
+  ambil_data();
   read_altitude();
   printUSB();
 }
