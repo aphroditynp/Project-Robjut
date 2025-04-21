@@ -1,109 +1,69 @@
-#ifndef RADIO_H
-#define RADIO_H
+#include <HardwareSerial.h>
 
-#include <Arduino.h>
-#include <sbus.h>
+// Gunakan UART2
+HardwareSerial SBUSSerial(2);
 
-// Gunakan UART2 di ESP32
-#define SBUS_RX_PIN 16
-#define SBUS_TX_PIN 17
+// Buffer untuk menerima data SBUS
+uint8_t sbusData[25];
+uint16_t channels[16];
 
-HardwareSerial sbusSerial(2);  // UART2
-bfs::SbusRx sbus_rx;           // Default constructor (tanpa argumen)
-bfs::SbusData data;
+bool failsafe = false;
+bool lostFrame = false;
 
-bool signal_lost = false;
-int16_t ch_roll, ch_pitch, ch_throttle, ch_yaw, ch_mode, ch_mode_backup, ch_vehicle_mode;
-bool arming;
-
-bool alt_hold = false;
-bool mode_fbwa = false;
-bool pos_hold = false;
-bool mode_manual = false;
-bool mode_fbwa_plane = false;
-bool mode_fbwb = false;
-bool transition_phase1 = false;
-bool transition_phase2 = false;
-bool transition_phase3 = false;
-bool mode_vtol = false;
-bool mode_safety = false;
-bool mode_vtol_plane = false;
-int mode_now, prev_mode;
-
-float outputScaler(uint16_t ch) {
-  return 0.002 * ch - 3;
+void radio_setup() {
+  // Inisialisasi SBUS Serial: 100000 baud, 8E2, inverted logic
+  SBUSSerial.begin(100000, SERIAL_8E2, 16, 17, true);  // RX = GPIO16, TX = GPIO17
 }
 
-void remote_setup() {
-  sbusSerial.begin(100000, SERIAL_8E2, SBUS_RX_PIN, SBUS_TX_PIN);
-  // sbus_rx.Begin(sbusSerial);  // Inject HardwareSerial via Begin()
+void decodeSBUS() {
+  channels[0]  = ((sbusData[1]    | sbusData[2]  << 8)                         & 0x07FF);
+  channels[1]  = ((sbusData[2]  >> 3 | sbusData[3]  << 5)                      & 0x07FF);
+  channels[2]  = ((sbusData[3]  >> 6 | sbusData[4]  << 2 | sbusData[5] << 10)  & 0x07FF);
+  channels[3]  = ((sbusData[5]  >> 1 | sbusData[6]  << 7)                      & 0x07FF);
+  channels[4]  = ((sbusData[6]  >> 4 | sbusData[7]  << 4)                      & 0x07FF);
+  channels[5]  = ((sbusData[7]  >> 7 | sbusData[8]  << 1 | sbusData[9] << 9)   & 0x07FF);
+  channels[6]  = ((sbusData[9]  >> 2 | sbusData[10] << 6)                      & 0x07FF);
+  channels[7]  = ((sbusData[10] >> 5 | sbusData[11] << 3)                      & 0x07FF);
+  channels[8]  = ((sbusData[12]    | sbusData[13] << 8)                        & 0x07FF);
+  channels[9]  = ((sbusData[13] >> 3 | sbusData[14] << 5)                      & 0x07FF);
+  channels[10] = ((sbusData[14] >> 6 | sbusData[15] << 2 | sbusData[16] << 10) & 0x07FF);
+  channels[11] = ((sbusData[16] >> 1 | sbusData[17] << 7)                      & 0x07FF);
+  channels[12] = ((sbusData[17] >> 4 | sbusData[18] << 4)                      & 0x07FF);
+  channels[13] = ((sbusData[18] >> 7 | sbusData[19] << 1 | sbusData[20] << 9)  & 0x07FF);
+  channels[14] = ((sbusData[20] >> 2 | sbusData[21] << 6)                      & 0x07FF);
+  channels[15] = ((sbusData[21] >> 5 | sbusData[22] << 3)                      & 0x07FF);
 
-  if (sbus_rx.Read()) {
-    data = sbus_rx.data();
-    arming = data.ch[4] > 1500;
-    signal_lost = data.lost_frame;
+  // Flags
+  failsafe  = sbusData[23] & 0x08;
+  lostFrame = sbusData[23] & 0x04;
+}
 
-    if (arming) {
-      Serial.println("Please disarm the remote for safety");
-      while (arming) {
-        if (sbus_rx.Read()) {
-          data = sbus_rx.data();
-          arming = data.ch[4] > 1500;
-          signal_lost = data.lost_frame;
+void printChannels() {
+  for (int i = 0; i < 16; i++) {
+    Serial.print("CH");
+    Serial.print(i + 1);
+    Serial.print(": ");
+    Serial.print(channels[i]);
+    Serial.print("\t");
+  }
+  Serial.println();
+
+  if (failsafe) Serial.println(">> FAILSAFE MODE <<");
+  if (lostFrame) Serial.println(">> FRAME LOST <<");
+}
+
+void radio_loop() {
+    if (SBUSSerial.available() >= 25) {
+      // Sinkronisasi dengan byte pertama SBUS (0x0F)
+      if (SBUSSerial.peek() == 0x0F) {
+        SBUSSerial.readBytes(sbusData, 25);
+  
+        if (sbusData[24] == 0x00) {
+          decodeSBUS();
+          printChannels();
         }
-      }
-    }
-
-    if (signal_lost) {
-      Serial.println("Signal lost, please reconnect");
-      while (signal_lost) {
-        if (sbus_rx.Read()) {
-          data = sbus_rx.data();
-          arming = data.ch[4] > 1500;
-          signal_lost = data.lost_frame;
-        }
+      } else {
+        SBUSSerial.read();  // buang byte sampai dapat 0x0F
       }
     }
   }
-
-  Serial.println("Remote setup complete");
-}
-
-void remote_loop() {
-  if (sbus_rx.Read()) {
-    data = sbus_rx.data();
-
-    ch_roll     = data.ch[0] * 0.62652f + 880.27f;
-    ch_pitch    = data.ch[1] * 0.62652f + 880.27f;
-    ch_throttle = data.ch[2] * 0.62652f + 880.27f;
-    ch_yaw      = data.ch[3] * 0.62652f + 880.27f;
-
-    ch_roll     = constrain(ch_roll, 988, 2012);
-    ch_pitch    = constrain(ch_pitch, 988, 2012);
-    ch_throttle = constrain(ch_throttle, 988, 2012);
-    ch_yaw      = constrain(ch_yaw, 988, 2012);
-
-    arming = data.ch[4] > 1500;
-    signal_lost = data.lost_frame;
-
-    ch_mode        = data.ch[5] * 0.62652f + 880.27f;
-    ch_mode_backup = data.ch[6] * 0.62652f + 880.27f;
-    ch_vehicle_mode = data.ch[7] * 0.62652f + 880.27f;
-
-    for (int i = 0; i < 16; i++) {
-      Serial.print(data.ch[i]);
-      Serial.print(" ");
-    }
-    Serial.println();
-
-    if (ch_mode_backup <= 1000) {
-      mode_now = 1;
-    } else if (ch_mode_backup > 1000 && ch_mode_backup <= 1512) {
-      mode_now = 2;
-    } else {
-      mode_now = 3;
-    }
-  }
-}
-
-#endif
