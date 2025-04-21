@@ -7,6 +7,18 @@
 #include <Actuator.h>
 #include <akuisisi.h>
 
+void printUSB() {
+  Serial.print("Roll: "); Serial.print(roll);
+  Serial.print(" | Pitch: "); Serial.print(pitch);
+  Serial.print(" | Yaw: "); Serial.print(yaw);
+  Serial.print(" | Altitude: "); Serial.print(read_altitude());
+  Serial.print(" | Throttle: "); Serial.print(throttle);
+  // Serial.print(" | U1: "); Serial.print(u1);
+  // Serial.print(" | U2: "); Serial.print(u2);
+  // Serial.print(" | U3: "); Serial.print(u3);
+  // Serial.print(" | U4: "); Serial.println(u4);
+}
+
 
 void setup() {
   Wire.begin();
@@ -18,18 +30,6 @@ void setup() {
   previousTime = millis(); 
   remote_setup();
   ultrasonic_setup();
-}
-
-void printUSB() {
-  Serial.print("Roll: "); Serial.print(roll);
-  Serial.print(" | Pitch: "); Serial.print(pitch);
-  Serial.print(" | Yaw: "); Serial.print(yaw);
-  Serial.print(" | Altitude: "); Serial.print(read_altitude());
-  Serial.print(" | Throttle: "); Serial.print(throttle);
-  // Serial.print(" | U1: "); Serial.print(u1);
-  // Serial.print(" | U2: "); Serial.print(u2);
-  // Serial.print(" | U3: "); Serial.print(u3);
-  // Serial.print(" | U4: "); Serial.println(u4);
 }
 
 void loop() {

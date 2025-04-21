@@ -2,7 +2,7 @@
 #ifndef ACTUATOR_H
 #define ACTUATOR_H
 #include <Arduino.h>
-#include <Servo.h>
+#include <ESP32Servo.h>
 // #include "FW_ControlModes.h"
 #include "Copter_control.h"
 // #include "TECS.h"

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef AKUISISI_H
 #define AKUISISI_H
 #include <Arduino.h>
