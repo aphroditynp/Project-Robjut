@@ -8,12 +8,12 @@
 #include <Kalman.h>
 
 #endif // AKUISISI_H
-extern float pitch, roll, yaw, delta_yaw, prev_yaw;
-extern float accPitch, accRoll; 
+float pitch, roll, yaw, delta_yaw, prev_yaw;
+float accPitch, accRoll; 
 // float AcX = 0.0, AcY = 0.0, AcZ = 0.0;
 const int MPU = 0x68;  // Alamat I2C MPU6050
-extern float dt;
-extern unsigned long previousTime, currentTime;
+float dt;
+unsigned long previousTime, currentTime;
 
 // Kalman kalmanX;
 // Kalman kalmanY;

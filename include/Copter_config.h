@@ -37,7 +37,7 @@
 
 #define M_CONST 1.25
 
-#define MOTOR_1 27 //roll kiri
-#define MOTOR_2 14 //pitch depan
-#define MOTOR_3 12 //roll kanan
-#define MOTOR_4 13 //pitch belakang
+#define MOTOR_1 33 //roll kiri
+#define MOTOR_2 25 //pitch depan
+#define MOTOR_3 26 //roll kanan
+#define MOTOR_4 27 //pitch belakang
