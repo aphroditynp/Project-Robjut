@@ -34,7 +34,7 @@ void setup() {
 
 void loop() {
   remote_loop();
-  ambil_data();
-  read_altitude();
-  printUSB();
+  // ambil_data();
+  // read_altitude();
+  // printUSB();
 }

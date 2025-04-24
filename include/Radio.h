@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 // UART SBUS di ESP32 (gunakan Serial2 dan inverter logic aktif)
-HardwareSerial sbusSerial(2);  // RX2: GPIO16, TX2: GPIO17 (TX ga kepake)
+HardwareSerial sbusSerial(0);  // RX2: GPIO16, TX2: GPIO17 (TX ga kepake)
 
 uint8_t sbusData[25];
 uint16_t ch_raw[16];
@@ -55,7 +55,7 @@ void decodeSBUS() {
 }
 
 void remote_setup() {
-  sbusSerial.begin(100000, SERIAL_8E2, 16, 17, true); // RX=16, TX=17, inverter logic
+  sbusSerial.begin(100000, SERIAL_8E2, 3, 1, true); // RX=16, TX=17, inverter logic
   Serial.println("Remote setup...");
 
   // Tunggu sinyal SBUS
