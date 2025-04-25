@@ -7,6 +7,7 @@
     #include "Copter_config.h"
     #include "Radio.h"
     #include "Ultrasonik.h"
+    #include "Control_modes.h"
     // float m1_pwm, m2_pwm, m3_pwm, m4_pwm;
     
     /// matrix invers A F450
@@ -26,37 +27,29 @@
     float roll_int, pitch_int;
     unsigned long tnow, tbefore;
     float tdelta;
-    float yaw_setpoint;
-    float alt_setpoint;
     unsigned long calc_time, last_calc_time;
     float delta_calc_time;
     float alt_ref, heading_now, last_alt, last_heading, alt_now;
     float alt_target, z_velocity;
     float roll_cmd, pitch_cmd, yaw_cmd;
-
-    // maximum and minimum values for roll, pitch, yaw, and PID limits
-    float min_roll = -35.0;  // 30
-    float max_roll = 35.0;
-    float min_pitch = -35.0;  // 25
-    float max_pitch = 35.0;
-    float min_yaw = -20.0;
-    float max_yaw = 20.0;
-
-    // PID limits
+    float min_roll = -35.0f;  // 30
+    float max_roll = 35.0f;
+    float min_pitch = -35.0f;  // 25
+    float max_pitch = 35.0f;
+    float min_yaw = -20.0f;
+    float max_yaw = 20.0f;
     int PID_max_roll = 400;
     int PID_max_pitch = 400;
     int PID_max_yaw = 400;
     int PID_min_roll = -400;
     int PID_min_pitch = -400;
     int PID_min_yaw = -400;
-    
-    // TRIM VALUES
     // float trim_roll = 3.0f;  // 4.8f;//= 2.71;//3.78; //-40 //(+) bales kanan, (-) bales kiri 5 -2
     // float trim_pitch = 3.5f;  // 10.0f;// 2.40;//2.62; //-30 //25 //22.4 -15.5 -10 -5 // (+) bales maju, (-)bales mundur // 3.5
     // float trim_yaw = -0.015f;   // 0.006 //(+) bales kanan, (-) bales kiri -0.349 -0.360
-    float trim_roll = 0.0;  // 4.8f;//= 2.71;//3.78; //-40 //(+) bales kanan, (-) bales kiri 5 -2
-    float trim_pitch = 0.0;  // 10.0f;// 2.40;//2.62; //-30 //25 //22.4 -15.5 -10 -5 // (+) bales maju, (-)bales mundur // 3.5
-    float trim_yaw = 0.0;   // 0.006 //(+) bales kanan, (-) bales kiri -0.349 -0.360
+    float trim_roll = 0.0f;  // 4.8f;//= 2.71;//3.78; //-40 //(+) bales kanan, (-) bales kiri 5 -2
+    float trim_pitch = 0.0f;  // 10.0f;// 2.40;//2.62; //-30 //25 //22.4 -15.5 -10 -5 // (+) bales maju, (-)bales mundur // 3.5
+    float trim_yaw = 0.0f;   // 0.006 //(+) bales kanan, (-) bales kiri -0.349 -0.360
     float omega2[4];
 
     //*Mode

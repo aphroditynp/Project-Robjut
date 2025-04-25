@@ -8,7 +8,7 @@
 #include <Kalman.h>
 
 #endif // AKUISISI_H
-float pitch, roll, yaw, delta_yaw, prev_yaw;
+float pitch, roll, yaw, delta_yaw, prev_yaw, gx, gy, gz;
 float accPitch, accRoll; 
 // float AcX = 0.0, AcY = 0.0, AcZ = 0.0;
 const int MPU = 0x68;  // Alamat I2C MPU6050
@@ -48,9 +48,9 @@ void ambil_data() {
     int16_t rawGy = (Wire.read() << 8) | Wire.read();
     int16_t rawGz = (Wire.read() << 8) | Wire.read();
 
-    float gx = rawGx / 131.0;
-    float gy = rawGy / 131.0;
-    float gz = rawGz / 131.0;
+    gx = rawGx / 131.0;
+    gy = rawGy / 131.0;
+    gz = rawGz / 131.0;
 
     accRoll  = atan2(Ay, sqrt(Ax * Ax + Az * Az)) * 180.0 / PI;
     accPitch = atan2(Ax, sqrt(Ay * Ay + Az * Az)) * 180.0 / PI;

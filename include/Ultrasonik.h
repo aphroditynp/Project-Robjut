@@ -28,5 +28,7 @@ float read_altitude() {
   return distance;
 }
 
+
+float altitude = read_altitude(); // Initialize altitude variable
 #endif // ULTRASONIK_H
 

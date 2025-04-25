@@ -13,10 +13,10 @@
 #define SERVO_RUD_L 5   // 5 9
 #define SERVO_AIL_R 6   // 6 10
 #define SERVO_RUD_R 14  // 9 9
-#define MOTOR_1_PIN  10  
-#define MOTOR_2_PIN  11
-#define MOTOR_3_PIN  12
-#define MOTOR_4_PIN  13
+#define MOTOR_1_PIN  33  
+#define MOTOR_2_PIN  25
+#define MOTOR_3_PIN  26
+#define MOTOR_4_PIN  27
 
 Servo motor1, motor2, motor3, motor4;
 // Servo aileron_L;
@@ -145,10 +145,10 @@ void copter_calcOutput(int16_t ch_thr)
     m4_pwm = control4 + throttle ;
   }
   else{
-    m1_pwm = 988;
-    m2_pwm = 988;
-    m3_pwm = 988;
-    m4_pwm = 988;
+    m1_pwm = 1000;
+    m2_pwm = 1000;
+    m3_pwm = 1000;
+    m4_pwm = 1000;
   }
     m1_pwm = constrain(m1_pwm, PWM_MIN, PWM_MAX);
     m2_pwm = constrain(m2_pwm, PWM_MIN, PWM_MAX);
