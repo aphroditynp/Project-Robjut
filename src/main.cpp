@@ -8,6 +8,16 @@
 #include <akuisisi.h>
 #include <Transisition.h>
 
+#define IMU_time 5
+#define Ultrasonik_time 10
+#define PRINT_time 50
+#define CONTROL_time 5
+#define RADIO_time 10
+
+TaskHandle_t Task_IMU;
+TaskHandle_t Task_Ultrasonik;
+TaskHandle_t Task_Print;
+
 void printUSB() {
   // Serial.print("Roll: "); Serial.print(roll);
   // Serial.print(" | Pitch: "); Serial.print(pitch);
@@ -38,6 +48,42 @@ void printUSB() {
 }
 
 
+void updateIMU(void *pvParameters){ 
+  for(;;){
+      ambil_data_imu();
+      vTaskDelay(pdMS_TO_TICKS(IMU_time)); // Reduced delay for more frequent updates
+  }
+};
+
+void updateUltrasonik(void *pvParameters){
+  for(;;){
+    read_altitude();
+    vTaskDelay(pdMS_TO_TICKS(Ultrasonik_time)); // Reduced delay for more frequent updates
+  }
+};
+
+void Print_task(void *pvParameters){
+  for(;;){
+      printUSB();
+      // aileron_L.writeMicroseconds();
+      vTaskDelay(pdMS_TO_TICKS(PRINT_time)); // Reduced delay for more frequent updates
+  }
+};
+
+void radio(void *pvParameters){
+  for(;;){
+      remote_loop();
+      vTaskDelay(pdMS_TO_TICKS(RADIO_time)); // Reduced delay for more frequent updates
+  }
+};
+
+void controlThd(void *pvParameters){
+  for(;;){
+      Transition_sequence_manual();
+      vTaskDelay(pdMS_TO_TICKS(CONTROL_time)); // Reduced delay for more frequent updates
+  }
+};
+
 void setup() {
   Wire.begin();
   Serial.begin(9600);
@@ -49,12 +95,13 @@ void setup() {
   remote_setup();
   ultrasonic_setup();
   init_actuator();
+
+  xTaskCreate(updateIMU, "IMU", 2048, NULL, 3, &Task_IMU);
+  xTaskCreate(updateUltrasonik, "Ultrasonik", 2048, NULL, 3, &Task_Ultrasonik);
+  xTaskCreate(Print_task, "Print", 4096, NULL, 3, &Task_Print);
+  xTaskCreate(radio, "Radio", 4096, NULL, 3, NULL);
+  xTaskCreate(controlThd, "Control", 4096, NULL, 3, NULL);
 }
 
 void loop() {
-  remote_loop();
-  Transition_sequence_manual();
-  ambil_data();
-  read_altitude();
-  printUSB();
 }

@@ -19,7 +19,7 @@ unsigned long previousTime, currentTime;
 // Kalman kalmanY;
 // Kalman kalmanZ;
 
-void ambil_data() {
+void ambil_data_imu() {
     currentTime = millis();
     dt = (currentTime - previousTime) / 1000.0;
     previousTime = currentTime;
@@ -72,5 +72,7 @@ void ambil_data() {
     // // Gunakan Kalman Filter untuk Yaw (opsional)
     // Yaw = kalmanZ.getAngle(Yaw, gz, dt);
 }
+
+
 
 
