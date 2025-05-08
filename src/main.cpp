@@ -86,6 +86,8 @@ void setup() {
   xTaskCreate(Print_task, "Print", 4096, NULL, 3, &Task_Print);
   xTaskCreate(radio, "Radio", 4096, NULL, 3, &Task_Radio); // Sudah diperbaiki
   xTaskCreate(controlThd, "Control", 4096, NULL, 3, NULL);
+  vTaskStartScheduler(); // Start
+
 }
 
 void loop() {
