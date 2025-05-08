@@ -41,15 +41,19 @@ void remote_setup() {
 }
 
 void remote_loop() {
-  Serial.println("Remote loop running");
+  // Serial.println("Remote loop running");
   while (SerialSBUS.available() >= SBUS_PACKET_SIZE) {
     // Sinkronisasi SBUS: cari byte awal 0x0F
     if (SerialSBUS.peek() != 0x0F) {
       SerialSBUS.read(); // buang byte tidak valid
       continue;
     }
-
+   
     SerialSBUS.readBytes(sbusData, SBUS_PACKET_SIZE);
+
+    // Periksa flag signal lost dan failsafe di byte akhir SBUS
+    signal_lost = sbusData[23] & 0x04;  // Bit ke-2 (0x04) menunjukkan signal lost
+    bool failsafe = sbusData[23] & 0x08; // Bit ke-3 (0x08) menunjukkan failsafe
 
     // Validasi byte akhir (opsional, bisa disesuaikan)
     if (sbusData[24] != 0x00) {
@@ -74,12 +78,17 @@ void remote_loop() {
     channels[14] = ((sbusData[20] >> 2 | sbusData[21] << 6) & 0x07FF);
     channels[15] = ((sbusData[21] >> 5 | sbusData[22] << 3) & 0x07FF);
 
-    // Debug: tampilkan nilai channel 0–7
-    // for (int i = 0; i < 8; i++) {
-    //   // Serial.print("CH"); Serial.print(i); Serial.print(": ");
-    //   // Serial.print(channels[i]); Serial.print("\t");
-    // }
-    // // Serial.println();
+    bool valid = true;
+    for (int i = 0; i < 16; i++) {
+        if (channels[i] < 172 || channels[i] > 1810) {
+            valid = false;
+            break;
+        }
+    }
+    if (!valid) {
+        Serial.println("Invalid SBUS frame, skipping...");
+        return;
+    }
 
     // // Peringatan jika data aneh
     // if (channels[0] < 100 || channels[0] > 2000) {
@@ -87,13 +96,18 @@ void remote_loop() {
     // }
 
     // Konversi ke PWM (1000–2000 µs)
-    ch_roll     = map(channels[0], 172, 1810, 1000, 2000);
-    ch_pitch    = map(channels[1], 172, 1810, 1000, 2000);
-    ch_throttle = map(channels[2], 172, 1810, 1000, 2000);
-    ch_yaw      = map(channels[3], 172, 1810, 1000, 2000);
+    ch_roll     = constrain(map(channels[0], 172, 1810, 1000, 2000), 1000, 2000);
+    ch_pitch    = constrain(map(channels[1], 172, 1810, 1000, 2000), 1000, 2000);
+    ch_throttle = constrain(map(channels[2], 172, 1810, 1000, 2000), 1000, 2000);
+    ch_yaw      = constrain(map(channels[3], 172, 1810, 1000, 2000), 1000, 2000);
     ch_mode         = map(channels[4], 172, 1810, 1000, 2000);
     ch_mode_backup  = map(channels[5], 172, 1810, 1000, 2000);
     ch_vehicle_mode = map(channels[6], 172, 1810, 1000, 2000);
+
+    // Serial.print("Roll PWM: "); Serial.println(ch_roll);  
+    // Serial.print("Pitch PWM: "); Serial.println(ch_pitch);
+    // Serial.print("Throttle PWM: "); Serial.println(ch_throttle);
+    // Serial.print("Yaw PWM: "); Serial.println(ch_yaw);
 
     // Penentuan mode
     if (ch_mode_backup <= 1000) {

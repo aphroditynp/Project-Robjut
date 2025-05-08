@@ -20,6 +20,7 @@ TaskHandle_t Task_Print;
 TaskHandle_t Task_Radio; // Tambahkan handle untuk task radio
 
 void printUSB() {
+  // Read roll, pitch, yaw, and throttle channels
   Serial.print(" | Roll: "); Serial.print(ch_roll);
   Serial.print(" | Pitch: "); Serial.print(ch_pitch);
   Serial.print(" | Yaw: "); Serial.print(ch_yaw);
